@@ -174,7 +174,7 @@ class peticionWeb extends Thread
         // si la cadena esta vacia, no retorna el index.htm principal
         if (sfichero.endsWith("/") || sfichero.equals(""))
         {
-        	sfichero = sfichero + "index.htm" ;
+        	sfichero = sfichero + "index.html" ;
         }
         
         try
