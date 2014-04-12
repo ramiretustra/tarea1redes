@@ -1,7 +1,7 @@
 import java.io.*;
 import java.net.*;
 import java.util.*;
-//mati chupalo :) bueno yasdfafafdaasd
+//mati chupalo :) bueno ya no mejor no
 public class servidorWeb
 {
 	int puerto = 90;
