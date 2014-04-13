@@ -54,7 +54,7 @@ public class servidorWeb
 
 			depura("Quedamos a la espera de conexion");
 			
-			while(true)  // bucle infinito .... ya veremos como hacerlo de otro modo
+			while(true)
 			{
 				Socket entrante = s.accept();
 				peticionWeb pCliente = new peticionWeb(entrante);
@@ -118,36 +118,87 @@ class peticionWeb extends Thread
 
 
 			String cadena = "";		// cadena donde almacenamos las lineas que leemos
-			int i=0;				// lo usaremos para que cierto codigo solo se ejecute una vez
-	
-			do			
+			
+			
+			cadena = in.readLine();
+
+			if (cadena != null )
 			{
-				cadena = in.readLine();
-
-				if (cadena != null )
-				{
-					depura("--" + cadena + "-");
-				}
-
-
-				if(i == 0) // la primera linea nos dice que fichero hay que descargar
-				{
-			        i++;
-			        
-			        StringTokenizer st = new StringTokenizer(cadena);
-                    
-                    if ((st.countTokens() >= 2) && st.nextToken().equals("GET")) 
-                    {
-                    	retornaFichero(st.nextToken()) ;
-                    }
-                    else if (st.nextToken().equals("POST"))
-                    {
-                    	
-                    }
-				}
-				
+				depura("--" + cadena + "-");
 			}
-			while (cadena != null && cadena.length() != 0);
+
+
+
+			StringTokenizer st = new StringTokenizer(cadena);
+			String getpost = st.nextToken();
+
+			if ((st.countTokens() >= 2) && getpost.equals("GET")) 
+			{
+				retornaFichero(st.nextToken());
+			}
+			else if (getpost.equals("POST"))
+			{
+				String line = null;
+				List<String> headers = new LinkedList<>();
+				String body = "";
+				int contentLength = 0;
+
+				do{
+					line = in.readLine();
+					if (line.isEmpty()){
+						headers.add(line);
+
+						int value=0;
+						int contador = 0;
+						line = "";
+						while((value = in.read()) != -1){
+							char c = (char)value;
+							line = line + c;
+							contador++;
+							if(contador == contentLength){
+								break;
+							}
+						}
+						body = body + line + '\n';
+					}
+					else{
+						st = new StringTokenizer(line);
+						if (st.nextToken().equals("Content-Length:")){
+							contentLength = Integer.parseInt(st.nextToken());
+						}
+						headers.add(line);
+					}
+				}while (!line.isEmpty());
+				
+				String nombre=null, ip=null, puerto=null;
+				
+				String[] keys = body.split("&");
+			    for (int i = 0; i < keys.length; i++) {
+			    	String[] valores = keys[i].split("=");
+			    	if(valores[0].equals("nombre")){
+			    		nombre=valores[1];
+			    	}
+			    	else if(valores[0].equals("ip")){
+			    		ip=valores[1];
+			    	}
+			    	else if(valores[0].equals("puerto")){
+			    		puerto=valores[1];
+			    	}
+			    }
+
+				try {
+				    FileWriter fw = new FileWriter("Contactos.txt",true);
+				    fw.write("<a href='#' class='list-group-item'>" + nombre + "</a><br>\n");
+				    fw.close();
+				} catch (FileNotFoundException | UnsupportedEncodingException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			out.close(); 
+			in.close();
+			scliente.close();
+
 
 		}
 		catch(Exception e)
