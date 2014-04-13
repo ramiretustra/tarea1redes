@@ -126,7 +126,6 @@ class peticionWeb extends Thread
 
 				if (cadena != null )
 				{
-					// sleep(500);
 					depura("--" + cadena + "-");
 				}
 
@@ -141,9 +140,9 @@ class peticionWeb extends Thread
                     {
                     	retornaFichero(st.nextToken()) ;
                     }
-                    else 
+                    else if (st.nextToken().equals("POST"))
                     {
-                    	out.println("400 Petición Incorrecta") ;
+                    	
                     }
 				}
 				
@@ -170,8 +169,7 @@ class peticionWeb extends Thread
 			sfichero = sfichero.substring(1) ;
 		}
         
-        // si acaba en /, le retornamos el index.htm de ese directorio
-        // si la cadena esta vacia, no retorna el index.htm principal
+        // si acaba en /, le retornamos el index.html de ese directorio
         if (sfichero.endsWith("/") || sfichero.equals(""))
         {
         	sfichero = sfichero + "index.html" ;
