@@ -136,7 +136,7 @@ class peticionWeb extends Thread
 			{
 				retornaFichero(st.nextToken());
 			}
-			else if (getpost.equals("POST"))
+			else if ((st.countTokens() >= 2) && getpost.equals("POST"))
 			{
 				retornaFichero(st.nextToken());
 				
@@ -217,7 +217,6 @@ class peticionWeb extends Thread
 	{
 		depura("Recuperamos el fichero " + sfichero);
 		
-		// comprobamos si tiene una barra al principio
 		if (sfichero.startsWith("/"))
 		{
 			sfichero = sfichero.substring(1) ;
@@ -240,19 +239,19 @@ class peticionWeb extends Thread
 				out.println("Content-Type: text/html");
 				out.println("Content-Length: " + mifichero.length());
 				out.println("\n");
-			
+				
 				BufferedReader ficheroLocal = new BufferedReader(new FileReader(mifichero));
 				
 				
 				String linea = "";
-				
 				linea = ficheroLocal.readLine();
-				while (linea != null);	
+				do
 				{
-					out.println(linea);
 					linea = ficheroLocal.readLine();
-				}
-				
+					if (linea != null ){
+						out.println(linea);
+					}
+				}while (linea != null);
 				
 				depura("fin envio fichero");
 				
