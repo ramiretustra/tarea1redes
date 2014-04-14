@@ -54,7 +54,7 @@ public class servidorWeb
 
 			depura("Quedamos a la espera de conexion");
 			
-			while(true)
+			while(true)  // bucle infinito .... ya veremos como hacerlo de otro modo
 			{
 				Socket entrante = s.accept();
 				peticionWeb pCliente = new peticionWeb(entrante);
@@ -107,7 +107,7 @@ class peticionWeb extends Thread
 		setPriority(NORM_PRIORITY - 1); // hacemos que la prioridad sea baja
    	}
 
-	public void run()
+	public void run() // emplementamos el metodo run
 	{
 		depura("Procesamos conexion");
 
@@ -115,95 +115,105 @@ class peticionWeb extends Thread
 		{
 			BufferedReader in = new BufferedReader (new InputStreamReader(scliente.getInputStream()));
   			out = new PrintWriter(new OutputStreamWriter(scliente.getOutputStream(),"8859_1"),true) ;
-  			
 
-			String cadena = "";
-			cadena = in.readLine();
 
-			if (cadena != null )
+			String cadena = "";		// cadena donde almacenamos las lineas que leemos
+			int i=0;				// lo usaremos para que cierto codigo solo se ejecute una vez
+	
+			do			
 			{
-				depura("--" + cadena + "-");
-			}
+				cadena = in.readLine();
 
-
-
-			StringTokenizer st = new StringTokenizer(cadena);
-			String getpost = st.nextToken();
-
-			if ((st.countTokens() >= 2) && getpost.equals("GET")) 
-			{
-				retornaFichero(st.nextToken());
-			}
-			/*else if ((st.countTokens() >= 2) && getpost.equals("POST"))
-			{
-				retornaFichero(st.nextToken());
-				
-				List<String> headers = new LinkedList<>();
-				String body = "";
-				String line;
-				int contentLength = 0;
-				StringTokenizer st2;
-
-				do{
-					line = in.readLine();
-					if (!line.isEmpty()){
-						st2 = new StringTokenizer(line);
-						if (st2.nextToken().equals("Content-Length:")){
-							contentLength = Integer.parseInt(st2.nextToken());
-						}
-						headers.add(line);
-					}
-					else{
-						headers.add(line);
-
-						int value=0;
-						int contador = 0;
-						line = "";
-						while((value = in.read()) != -1){
-							char c = (char)value;
-							line = line + c;
-							contador++;
-							if(contador == contentLength){
-								break;
-							}
-						}
-						body += line + '\n';
-					}
-				}while (!line.isEmpty());
-				
-				String nombre=null, ip=null, puerto=null;
-				
-				String[] keys = body.split("&");
-			    for (int i = 0; i < keys.length; i++) {
-			    	String[] valores = keys[i].split("=");
-			    	if(valores[0].equals("nombre")){
-			    		nombre=valores[1];
-			    	}
-			    	else if(valores[0].equals("ip")){
-			    		ip=valores[1];
-			    	}
-			    	else if(valores[0].equals("puerto")){
-			    		puerto=valores[1];
-			    	}
-			    }
-
-				try {
-				    FileWriter fw = new FileWriter("Contactos.txt",true);
-				    fw.write("<a href='#' class='list-group-item'>" + nombre+ ip+ puerto + "</a><br>\n");
-				    fw.close();
-				} catch (FileNotFoundException | UnsupportedEncodingException e) {
-					e.printStackTrace();
+				if (cadena != null )
+				{
+					// sleep(500);
+					depura("--" + cadena + "-");
 				}
-			}*/
-			else 
-            {
-            	out.println("400 Petición Incorrecta") ;
-            }
-			
-			out.close(); 
-			in.close();
-			scliente.close();
 
+
+				if(i == 0)
+				{
+			        i++;
+			        
+			        StringTokenizer st = new StringTokenizer(cadena);
+			        String getpost = st.nextToken(); 
+                    
+                    if ((st.countTokens() >= 2) && getpost.equals("GET")) 
+                    {
+                    	retornaFichero(st.nextToken()) ;
+                    }
+                    else if ((st.countTokens() >= 2) && getpost.equals("POST"))
+        			{
+        				
+        				List<String> headers = new LinkedList<>();
+        				String body = "";
+        				String line = null;
+        				int contentLength = 0;
+        				StringTokenizer st2;
+        				
+        				
+        				boolean continuar = true;
+        				while(continuar) {
+        					line = in.readLine();
+        					if (line.isEmpty()){
+        						headers.add(line);
+        						continuar = false;
+        						
+
+        						int value=0;
+        						int cont = 0;
+        				        line = "";
+        				        while((value = in.read()) != -1){
+        				            char c = (char)value;
+        				            line = line + c;
+        				            cont++;
+        				            if(cont == contentLength) break;
+        				        }
+        						body = body + line + '\n';
+        					}
+        					else{
+        						st2 = new StringTokenizer(line);
+        						if (st2.nextToken().equals("Content-Length:")){
+        							contentLength = Integer.parseInt(st2.nextToken());
+        						}
+        						headers.add(line);
+        					}
+        				}
+        				
+        				
+        				String nombre=null, ip=null, puerto=null;
+        				String[] keys = body.split("&");
+        			    for (int j = 0; j < keys.length; j++) {
+        			    	String[] valores = keys[j].split("=");
+        			    	if(valores[0].equals("nombre")){
+        			    		nombre=valores[1];
+        			    	}
+        			    	else if(valores[0].equals("ip")){
+        			    		ip=valores[1];
+        			    	}
+        			    	else if(valores[0].equals("puerto")){
+        			    		puerto=valores[1];
+        			    	}
+        			    }
+
+        				try {
+        				    FileWriter fw = new FileWriter("Contactos.txt",true);
+        				    fw.write("<a class='list-group-item'>" + "Nombre: " + nombre + " IP: " + ip + " Puerto: " + puerto + "</a><br>\n");
+        				    fw.close();
+        				} catch (FileNotFoundException | UnsupportedEncodingException e) {
+        					e.printStackTrace();
+        				}
+        				
+        				retornaFichero(st.nextToken());
+        			}
+                    else 
+                    {
+                    	out.println("400 Petición Incorrecta") ;
+                    }
+				}
+				
+			}
+			while (cadena != null && cadena.length() != 0);
 
 		}
 		catch(Exception e)
@@ -217,79 +227,70 @@ class peticionWeb extends Thread
 	
 	void retornaFichero(String sfichero)
 	{
-		depura("Recuperamos el fichero " + sfichero);
+		//depura("Recuperamos el fichero " + sfichero);
 		
 		if (sfichero.startsWith("/"))
 		{
 			sfichero = sfichero.substring(1) ;
 		}
         
+
         if (sfichero.endsWith("/") || sfichero.equals(""))
         {
-        	sfichero +=  "index.html" ;
+        	sfichero = sfichero + "index.html" ;
         }
-
+        
         try
         {
-        	File mifichero = new File(sfichero);
+	        
+		    File mifichero = new File(sfichero);
 		    
-        	//FileInputStream mifichero = new FileInputStream(sfichero) ;
-		        
 		    if (mifichero.exists()) 
 		    {
-	      		if (sfichero.endsWith("html")){
-	      			System.out.println("html1");
-	      			out.println("HTTP/1.0 200 ok");
-				    out.println("Server: TareaRedes Server/1.0");
-	      			out.println("Date: " + new Date());
-	      			out.println("Content-Type: text/html");
-	      			out.println("Content-Length: " + mifichero.length());
-	      			out.println("\n");
-	      			System.out.println("html2");
-	      		}
-	      		else if (sfichero.endsWith("ico")){
-	      			System.out.println("ico1");
-	      			out.println("HTTP/1.0 200 ok");
-				    out.println("Server: TareaRedes Server/1.0");
-	      			out.println("Date: " + new Date());
-	      			out.println("Content-Type: text/ico");
-	      			out.println("Content-Length: " + mifichero.length());
-	      			out.println("\n");
-	      			System.out.println("ico2");
-	      		}
-	      		
+		    	if (sfichero.endsWith("html")){
+		      		out.println("HTTP/1.0 200 ok");
+					out.println("Server: Roberto Server/1.0");
+					out.println("Date: " + new Date());
+					out.println("Content-Type: text/html");
+					out.println("Content-Length: " + mifichero.length());
+					out.println("\n");
+		    	}
+			
 				BufferedReader ficheroLocal = new BufferedReader(new FileReader(mifichero));
 				
 				
 				String linea = "";
-				linea = ficheroLocal.readLine();
-				do
+				
+				do			
 				{
 					linea = ficheroLocal.readLine();
-					if (linea != null ){
+	
+					if (linea != null )
+					{
 						out.println(linea);
 					}
-				}while (linea != null);
+				}
+				while (linea != null);
 				
 				depura("fin envio fichero");
 				
 				ficheroLocal.close();
-				
 				out.close();
 				
 			}
 			else
 			{
-				depura("No encuentro el fichero " + mifichero.toString());	
+				//depura("No encuentro el fichero " + mifichero.toString());	
 	      		out.println("HTTP/1.0 400 ok");
 	      		out.close();
 			}
-			//mifichero.close();
+			
 		}
 		catch(Exception e)
 		{
 			depura("Error al retornar fichero");	
 		}
+
 	}
 	
 }

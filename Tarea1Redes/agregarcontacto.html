@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
@@ -47,16 +47,14 @@
   		<div class="jumbotron">
         	<h1>Ingrese los datos</h1>
         	<div class="form-group">
-            <form action="index.html" method="post" id="datos">
+            <form class="form-signin" role="form" action="index.html" method="post" id="datos">
               <label for="nombre">Nombre:</label>
-              <input type="text" id="nombre" placeholder="Nombre"></br>
+              <input class="form-control" type="text" name="nombre" id="nombre" placeholder="Nombre" required autofocus></br>
               <label for="nombre">IP:</label>
-              <input type="text" id="ip" placeholder="IP"></br>
+              <input class="form-control" type="text" name="ip" id="ip" placeholder="IP" required></br>
               <label for="nombre">Puerto:</label>
-              <input type="text" id="puerto" placeholder="Puerto"></br>
-              <div class="btn-group btn-group-lg">
-                <button type="button" class="btn btn-primary" onclick="window.location.href='index.html'">Agregar</button>
-              </div>
+              <input class="form-control" type="text" name="puerto" id="puerto" placeholder="Puerto" required></br>
+              <button class="btn-group" type="submit" >Agregar</button>
             </form>
           </div>
 
