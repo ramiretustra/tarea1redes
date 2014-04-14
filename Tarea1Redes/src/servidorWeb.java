@@ -115,7 +115,7 @@ class peticionWeb extends Thread
 		{
 			BufferedReader in = new BufferedReader (new InputStreamReader(scliente.getInputStream()));
   			out = new PrintWriter(new OutputStreamWriter(scliente.getOutputStream(),"8859_1"),true) ;
-
+  			
 
 			String cadena = "";		// cadena donde almacenamos las lineas que leemos
 			
@@ -138,14 +138,24 @@ class peticionWeb extends Thread
 			}
 			else if (getpost.equals("POST"))
 			{
-				String line = null;
+				retornaFichero(st.nextToken());
+				
 				List<String> headers = new LinkedList<>();
 				String body = "";
+				String line;
 				int contentLength = 0;
+				StringTokenizer st2;
 
 				do{
 					line = in.readLine();
-					if (line.isEmpty()){
+					if (!line.isEmpty()){
+						st2 = new StringTokenizer(line);
+						if (st2.nextToken().equals("Content-Length:")){
+							contentLength = Integer.parseInt(st2.nextToken());
+						}
+						headers.add(line);
+					}
+					else{
 						headers.add(line);
 
 						int value=0;
@@ -159,14 +169,7 @@ class peticionWeb extends Thread
 								break;
 							}
 						}
-						body = body + line + '\n';
-					}
-					else{
-						st = new StringTokenizer(line);
-						if (st.nextToken().equals("Content-Length:")){
-							contentLength = Integer.parseInt(st.nextToken());
-						}
-						headers.add(line);
+						body += line + '\n';
 					}
 				}while (!line.isEmpty());
 				
@@ -188,7 +191,7 @@ class peticionWeb extends Thread
 
 				try {
 				    FileWriter fw = new FileWriter("Contactos.txt",true);
-				    fw.write("<a href='#' class='list-group-item'>" + nombre + "</a><br>\n");
+				    fw.write("<a href='#' class='list-group-item'>" + nombre+ ip+ puerto + "</a><br>\n");
 				    fw.close();
 				} catch (FileNotFoundException | UnsupportedEncodingException e) {
 					e.printStackTrace();
@@ -220,16 +223,13 @@ class peticionWeb extends Thread
 			sfichero = sfichero.substring(1) ;
 		}
         
-        // si acaba en /, le retornamos el index.html de ese directorio
         if (sfichero.endsWith("/") || sfichero.equals(""))
         {
-        	sfichero = sfichero + "index.html" ;
+        	sfichero +=  "index.html" ;
         }
         
         try
         {
-	        
-		    // Ahora leemos el fichero y lo retornamos
 		    File mifichero = new File(sfichero) ;
 		        
 		    if (mifichero.exists()) 
@@ -246,24 +246,20 @@ class peticionWeb extends Thread
 				
 				String linea = "";
 				
-				do			
+				linea = ficheroLocal.readLine();
+				while (linea != null);	
 				{
+					out.println(linea);
 					linea = ficheroLocal.readLine();
-	
-					if (linea != null )
-					{
-						// sleep(500);
-						out.println(linea);
-					}
 				}
-				while (linea != null);
+				
 				
 				depura("fin envio fichero");
 				
 				ficheroLocal.close();
 				out.close();
 				
-			}  // fin de si el fiechero existe 
+			}
 			else
 			{
 				depura("No encuentro el fichero " + mifichero.toString());	
