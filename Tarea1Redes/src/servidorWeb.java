@@ -228,15 +228,9 @@ class peticionWeb extends Thread
         {
         	sfichero +=  "index.html" ;
         }
-        if (sfichero.endsWith("ico")){
-        	depura(sfichero.toString());
-      		out.println("HTTP/1.0 400 ok");
-      		out.close();
-        }
-        else{
+
         try
         {
-        	System.out.println("entro igual la caga de mierda");
         	File mifichero = new File(sfichero);
 		    
         	//FileInputStream mifichero = new FileInputStream(sfichero) ;
@@ -246,7 +240,7 @@ class peticionWeb extends Thread
 	      		if (sfichero.endsWith("html")){
 	      			System.out.println("html1");
 	      			out.println("HTTP/1.0 200 ok");
-				    //out.println("Server: TareaRedes Server/1.0");
+				    out.println("Server: TareaRedes Server/1.0");
 	      			out.println("Date: " + new Date());
 	      			out.println("Content-Type: text/html");
 	      			out.println("Content-Length: " + mifichero.length());
@@ -256,7 +250,7 @@ class peticionWeb extends Thread
 	      		else if (sfichero.endsWith("ico")){
 	      			System.out.println("ico1");
 	      			out.println("HTTP/1.0 200 ok");
-				    //out.println("Server: TareaRedes Server/1.0");
+				    out.println("Server: TareaRedes Server/1.0");
 	      			out.println("Date: " + new Date());
 	      			out.println("Content-Type: text/ico");
 	      			out.println("Content-Length: " + mifichero.length());
@@ -296,8 +290,6 @@ class peticionWeb extends Thread
 		{
 			depura("Error al retornar fichero");	
 		}
-        }
-
 	}
 	
 }
