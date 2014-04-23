@@ -48,13 +48,13 @@ class peticionWeb extends Thread
 
 		try
 		{
-			BufferedReader in = new BufferedReader (new InputStreamReader(scliente.getInputStream()));
+			BufferedReader url = new BufferedReader (new InputStreamReader(scliente.getInputStream()));
   			out = new PrintWriter(new OutputStreamWriter(scliente.getOutputStream(),"8859_1"),true) ;
 
 
 			String cadena = "";		// cadena donde almacenamos las lineas que leemos
 			
-			cadena = in.readLine();
+			cadena = url.readLine();
 			
 			if (cadena != null)
 			{
@@ -68,54 +68,56 @@ class peticionWeb extends Thread
 	            else if ((st.countTokens() >= 2) && getpost.equals("POST"))
 				{
 					
-					List<String> headers = new LinkedList<>();
-					String body = "";
-					String line = null;
+					List<String> lista_lineas = new LinkedList<>();
+					String contenido = "";
+					String linea = null;
 					int contentLength = 0;
 					StringTokenizer st2;
 					
 					
-					boolean continuar = true;
-					while(continuar) {
-						line = in.readLine();
-						if (line.isEmpty()){
-							headers.add(line);
-							continuar = false;
+					while(true) {
+						linea = url.readLine();
+						if (linea.isEmpty()){
+							lista_lineas.add(linea);
 							
 	
-							int value=0;
-							int cont = 0;
-					        line = "";
-					        while((value = in.read()) != -1){
-					            char c = (char)value;
-					            line = line + c;
-					            cont++;
-					            if(cont == contentLength) break;
+							int ultimo=0;
+							int i = 0;
+					        linea = "";
+					        while((ultimo = url.read()) != -1)
+					        {
+					            char c = (char)ultimo;
+					            linea += c;
+					            i++;
+					            if(i == contentLength) break;
 					        }
-							body = body + line + '\n';
+							contenido += linea + '\n';
+							break;
 						}
-						else{
-							st2 = new StringTokenizer(line);
-							if (st2.nextToken().equals("Content-Length:")){
+						else
+						{
+							st2 = new StringTokenizer(linea);
+							if (st2.nextToken().equals("Content-Length:"))
+							{
 								contentLength = Integer.parseInt(st2.nextToken());
 							}
-							headers.add(line);
+							lista_lineas.add(linea);
 						}
 					}
 					
 					
 					String nombre=null, ip=null, puerto=null;
-					String[] keys = body.split("&");
-				    for (int j = 0; j < keys.length; j++) {
-				    	String[] valores = keys[j].split("=");
-				    	if(valores[0].equals("nombre")){
-				    		nombre=valores[1];
+					String[] parametros = contenido.split("&");
+				    for (int j = 0; j < parametros.length; j++) {
+				    	String[] datos = parametros[j].split("=");
+				    	if(datos[0].equals("nombre")){
+				    		nombre=datos[1];
 				    	}
-				    	else if(valores[0].equals("ip")){
-				    		ip=valores[1];
+				    	else if(datos[0].equals("ip")){
+				    		ip=datos[1];
 				    	}
-				    	else if(valores[0].equals("puerto")){
-				    		puerto=valores[1];
+				    	else if(datos[0].equals("puerto")){
+				    		puerto=datos[1];
 				    	}
 				    }
 	
@@ -138,7 +140,7 @@ class peticionWeb extends Thread
 				while (cadena != null && cadena.length() != 0)
 				{
 					System.out.println(currentThread().toString() + " " + cadena);
-					cadena = in.readLine();
+					cadena = url.readLine();
 				}
 				System.out.println(currentThread().toString() + " Fin Thread\n");
 			}
@@ -155,43 +157,43 @@ class peticionWeb extends Thread
 	}
 	
 	
-	void retornaFichero(String sfichero)
+	void retornaFichero(String fichero)
 	{
-		if (sfichero.startsWith("/"))
+		if (fichero.startsWith("/"))
 		{
-			sfichero = sfichero.substring(1) ;
+			fichero = fichero.substring(1) ;
 		}
         
 
-        if (sfichero.endsWith("/") || sfichero.equals(""))
+        if (fichero.endsWith("/") || fichero.equals(""))
         {
-        	sfichero = sfichero + "index.html" ;
+        	fichero = fichero + "index.html" ;
         }
         
         try
         {
 	        
-		    File mifichero = new File(sfichero);
+		    File archivo = new File(fichero);
 		    
-		    if (mifichero.exists()) 
+		    if (archivo.exists()) 
 		    {
-		    	if (sfichero.endsWith("html")){
+		    	if (fichero.endsWith("html")){
 		      		out.println("HTTP/1.0 200 ok");
 					out.println("Server: Roberto Server/1.0");
 					out.println("Date: " + new Date());
 					out.println("Content-Type: text/html");
-					out.println("Content-Length: " + mifichero.length());
+					out.println("Content-Length: " + archivo.length());
 					out.println("\n");
 		    	}
 			
-				BufferedReader ficheroLocal = new BufferedReader(new FileReader(mifichero));
+				BufferedReader BufferFichero = new BufferedReader(new FileReader(archivo));
 				
 				
 				String linea = "";
 				
 				do			
 				{
-					linea = ficheroLocal.readLine();
+					linea = BufferFichero.readLine();
 	
 					if (linea != null )
 					{
@@ -200,7 +202,7 @@ class peticionWeb extends Thread
 				}
 				while (linea != null);
 				
-				ficheroLocal.close();
+				BufferFichero.close();
 				out.close();
 				
 			}
