@@ -10,7 +10,7 @@ public class servidorWeb
 		
 		try
 		{
-			ServerSocket s = new ServerSocket(90);
+			ServerSocket s = new ServerSocket(80);
 
 			System.out.println("Quedamos a la espera de conexion");
 			
