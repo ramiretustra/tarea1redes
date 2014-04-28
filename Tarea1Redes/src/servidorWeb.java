@@ -52,7 +52,7 @@ class peticionWeb extends Thread
   			out = new PrintWriter(new OutputStreamWriter(scliente.getOutputStream(),"8859_1"),true) ;
 
 
-			String cadena = "";		// cadena donde almacenamos las lineas que leemos
+			String cadena = "";
 			
 			cadena = url.readLine();
 			
@@ -67,67 +67,48 @@ class peticionWeb extends Thread
 	            }
 	            else if ((st.countTokens() >= 2) && getpost.equals("POST"))
 				{
-					
-					List<String> lista_lineas = new LinkedList<>();
-					String contenido = "";
-					String linea = null;
-					int contentLength = 0;
+					String parametros = "", readline = null;
+					int largocontenido = 0;
 					StringTokenizer st2;
 					
 					
 					while(true) {
-						linea = url.readLine();
-						if (linea.isEmpty()){
-							lista_lineas.add(linea);
-							
-	
-							int ultimo=0;
-							int i = 0;
-					        linea = "";
-					        while((ultimo = url.read()) != -1)
-					        {
-					            char c = (char)ultimo;
-					            linea += c;
-					            i++;
-					            if(i == contentLength) break;
-					        }
-							contenido += linea + '\n';
-							break;
+						readline = url.readLine();
+						if (!(readline.isEmpty())){
+							st2 = new StringTokenizer(readline);
+							if (st2.nextToken().equals("Content-Length:"))
+							{
+								largocontenido = Integer.parseInt(st2.nextToken());
+							}
 						}
 						else
 						{
-							st2 = new StringTokenizer(linea);
-							if (st2.nextToken().equals("Content-Length:"))
-							{
-								contentLength = Integer.parseInt(st2.nextToken());
-							}
-							lista_lineas.add(linea);
+							for (int i = 0; i < largocontenido; i++)
+					        {
+					            parametros += (char)url.read();
+					        }
+							break;
 						}
 					}
 					
 					
 					String nombre=null, ip=null, puerto=null;
-					String[] parametros = contenido.split("&");
-				    for (int j = 0; j < parametros.length; j++) {
-				    	String[] datos = parametros[j].split("=");
-				    	if(datos[0].equals("nombre")){
-				    		nombre=datos[1];
+					String[] parametro = parametros.split("&");
+				    for (int i = 0; i < parametro.length; i++) {
+				    	if (parametro[i].startsWith("nombre")){
+				    		nombre = parametro[i].substring(7);
 				    	}
-				    	else if(datos[0].equals("ip")){
-				    		ip=datos[1];
+				    	else if (parametro[i].startsWith("ip")){
+				    		ip = parametro[i].substring(3);
 				    	}
-				    	else if(datos[0].equals("puerto")){
-				    		puerto=datos[1];
+				    	else if (parametro[i].startsWith("puerto")){
+				    		puerto = parametro[i].substring(7);
 				    	}
 				    }
-	
-					try {
-					    FileWriter fw = new FileWriter("Contactos.txt",true);
-					    fw.write("<a class='list-group-item'>" + "Nombre: " + nombre + " IP: " + ip + " Puerto: " + puerto + "</a><br>\n");
-					    fw.close();
-					} catch (FileNotFoundException | UnsupportedEncodingException e) {
-						e.printStackTrace();
-					}
+				    
+					FileWriter fw = new FileWriter("Contactos.txt",true);
+					fw.write("<a class='list-group-item'>" + "Nombre: " + nombre + " IP: " + ip + " Puerto: " + puerto + "</a><br>");
+					fw.close();
 					
 					retornaFichero(st.nextToken());
 				}
@@ -189,18 +170,18 @@ class peticionWeb extends Thread
 				BufferedReader BufferFichero = new BufferedReader(new FileReader(archivo));
 				
 				
-				String linea = "";
+				String readline = "";
 				
 				do			
 				{
-					linea = BufferFichero.readLine();
+					readline = BufferFichero.readLine();
 	
-					if (linea != null )
+					if (readline != null )
 					{
-						out.println(linea);
+						out.println(readline);
 					}
 				}
-				while (linea != null);
+				while (readline != null);
 				
 				BufferFichero.close();
 				out.close();
