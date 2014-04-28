@@ -1,2 +1,0 @@
-<a class='list-group-item'>Nombre: asdsi IP: 123 Puerto: 321</a><br>
-<a class='list-group-item'>Nombre: asd IP: 3 Puerto: 2</a><br>
