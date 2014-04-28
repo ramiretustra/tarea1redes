@@ -107,7 +107,7 @@ class peticionWeb extends Thread
 				    }
 				    
 					FileWriter fw = new FileWriter("Contactos.txt",true);
-					fw.write("<a class='list-group-item'>" + "Nombre: " + nombre + " IP: " + ip + " Puerto: " + puerto + "</a><br>");
+					fw.write("<a class='list-group-item'>" + "Nombre: " + nombre + " IP: " + ip + " Puerto: " + puerto + "</a><br>\n");
 					fw.close();
 					
 					retornaFichero(st.nextToken());

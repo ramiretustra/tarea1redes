@@ -1,8 +1,2 @@
-<a class='list-group-item'>Nombre: asd1 IP: 123 Puerto: 321
-</a><br><a class='list-group-item'>Nombre: asd2 IP: 456 Puerto: 654
-</a><br><a class='list-group-item'>Nombre: asdf IP: 1 Puerto: 2
-</a><br><a class='list-group-item'>Nombre: asdf1 IP: 135 Puerto: 531
-</a><br><a class='list-group-item'>Nombre: si IP: 1 Puerto: 2
-</a><br><a class='list-group-item'>Nombre: si2 IP: 654 Puerto: 567
-</a><br><a class='list-group-item'>Nombre: si3 IP: 234 Puerto: 432
-</a><br><a class='list-group-item'>Nombre: si4 IP: 1 Puerto: 2</a><br><a class='list-group-item'>Nombre: 100%25 IP: 3 Puerto: 5</a><br><a class='list-group-item'>Nombre: asd3 IP: 123 Puerto: 321</a><br>
+<a class='list-group-item'>Nombre: asdsi IP: 123 Puerto: 321</a><br>
+<a class='list-group-item'>Nombre: asd IP: 3 Puerto: 2</a><br>
